@@ -1,4 +1,5 @@
 /// --- Initialize --- ///
+
 if (isOpen("ROI Manager")) {
 	selectWindow("ROI Manager");
 	run("Close");
@@ -9,6 +10,7 @@ setBackgroundColor(0, 0, 0);
 setForegroundColor(255, 255, 255);
 
 /// --- Dialog --- ///
+
 Dialog.create("BlobsSeg-Options");
 nChannel = Dialog.addChoice("Specify Channel:", newArray("C1", "C2", "C3", "C4"));
 ThreshCoeff = Dialog.addNumber("Tresh. Coeff. (big objects)", 1);
@@ -21,6 +23,7 @@ ThreshCoeff = Dialog.getNumber();
 MinSize = Dialog.getNumber();
 
 /// --- Open & get variables --- ///
+
 nameczi = getTitle();
 name = File.nameWithoutExtension;
 getDimensions(width,height,channels,slices,frames);
@@ -32,6 +35,7 @@ C1 = "C1-"+nameczi;
 C2 = "C2-"+nameczi;
 C3 = "C3-"+nameczi;
 C4 = "C4-"+nameczi;
+
 selectWindow(Chn);
 rename("Chn"); Chn = getTitle();
 nameroi = name + ".roi"; 
@@ -42,6 +46,7 @@ list = getFileList(folder);
 setBatchMode(true);
 
 /// --- Check wether ROI(s) in .roi or .zip file --- ///
+
 testroi = 0;testzip = 0;
 	for(file=0; file<list.length; file++){
 		if (indexOf(list[file],nameroi)>=0){
@@ -53,6 +58,7 @@ testroi = 0;testzip = 0;
 	}
 
 /// --- Open ROI(s) --- ///
+
 if (testroi == 1){
 open(folder+name+".roi");
 roiManager("Add");
@@ -67,12 +73,23 @@ run("Select None");
 nROIs = roiManager("count")-1;
 
 /// --- Measure Total Area (within ROI(s)) --- ///
+
 roiManager("Select", nROIs);
 roiManager("Measure");
 ROIsArea = getResult("Area",0);
 run("Select None");
 
+/// --- Isolate current Z plane --- ///
+
+roiManager("Select", 0);
+nZ = getSliceNumber(); // Get current z plane
+run("Select None");
+run("Duplicate...", "use");
+close(Chn);
+rename("Chn"); Chn = getTitle();
+
 /// --- Remove Outliers --- ///
+
 selectWindow(Chn);
 run("Duplicate...", " ");
 rename("ChnBG"); ChnBG = getTitle();
@@ -85,6 +102,7 @@ run("Gaussian Blur...", "sigma=1");
 rename("ChnProcess"); ChnProcess = getTitle();
 
 /// --- Measure Background --- ///
+
 run("Set Measurements...", "area mean redirect=None decimal=3");
 selectWindow(ChnBG);
 roiManager("Select", nROIs);
@@ -94,6 +112,7 @@ ThreshChn = BgChn*ThreshCoeff;
 close(ChnBG);
 
 /// --- Make Masks&Outlines (strong signal) --- ///
+
 selectWindow(ChnProcess);
 setThreshold(ThreshChn, 255);
 setOption("BlackBackground", true);
@@ -106,18 +125,21 @@ run("Outline");
 rename("ChnMaskOutlines"); ChnMaskOutlines = getTitle();
 
 /// --- Close Data --- ///
+
 close(C1);close(C2);close(C3);close(C4);
 close(ChnBG);close(ChnProcess);
 selectWindow("ROI Manager"); run("Close");
 selectWindow("Results"); run("Close");
 
 /// --- Measure big blobs --- ///
+
 selectWindow("ChnMask");
 run("Set Measurements...", "area mean shape feret's area_fraction redirect=None decimal=3");
 run("Analyze Particles...", "size=0.00-Infinity show=Masks display summarize add in_situ");
 run("Remove Overlay");
 
 /// --- Update&Show Results --- ///
+
 run("Merge Channels...", "c7=ChnMaskOutlines c4=Chn create");
 
 selectWindow("Summary");
