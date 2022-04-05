@@ -5,6 +5,8 @@ if (isOpen("Summary")) {selectWindow("Summary"); run("Close");}
 if (isOpen("Results")) {selectWindow("Results"); run("Close");}
 if (isOpen("ROI Manager")) {selectWindow("ROI Manager"); run("Close");}
 
+setBatchMode(true);
+
 list = getList("image.titles");
 for (i=0; i<list.length; i++){
 	if (endsWith(list[i], "C1-Mask.tif")==true){
@@ -22,7 +24,7 @@ getPixelSize (unit, pixelWidth, pixelHeight);
 // C1 ------------------------------------------------------------------
 
 selectWindow(C1_Mask);
-run("Invert");
+//run("Invert");
 run("Set Measurements...", "area centroid redirect=None decimal=3");
 run("Analyze Particles...", "display add"); roiManager("Show None");
 
@@ -60,12 +62,12 @@ roiManager("reset")
 
 run("Clear Results");
 selectWindow(C1_Mask);
-run("Invert");
+//run("Invert");
 
 // C2 ------------------------------------------------------------------
 
 selectWindow(C2_Mask);
-run("Invert");
+//run("Invert");
 run("Set Measurements...", "area centroid redirect=None decimal=3");
 run("Analyze Particles...", "display add"); roiManager("Show None");
 
@@ -103,8 +105,7 @@ roiManager("reset")
 
 run("Clear Results");
 selectWindow(C2_Mask);
-run("Invert");
-
+//run("Invert");
 
 /// --- Get general stats --- ///
 
@@ -165,7 +166,9 @@ Table.set("C1C2_union", 0, C1C2_union_val);
 Table.set("C1C2_inter", 0, C1C2_inter_val);
 Table.set("C1C2_IoU", 0, C1C2_IoU_val);
 
-stop
+Table.setLocationAndSize(200, 200, 1000, 200)
+Table.update;
+
 
 /// --- Fill Result Table --- ///
 
@@ -186,6 +189,18 @@ for (i=0; i<All_channel.length; i++) {
 }
 setOption("ShowRowNumbers", false);
 updateResults;
+
+/// --- Display --- ///
+
+if (isOpen("ROI Manager")) {selectWindow("ROI Manager"); run("Close");}
+
+run("Merge Channels...", "c2="+C1_Mask+" c6="+C2_Mask+" create keep");
+setBatchMode("exit and display");
+run("Tile");
+
+
+
+
 
 
 

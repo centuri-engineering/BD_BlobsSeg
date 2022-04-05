@@ -14,7 +14,7 @@ setForegroundColor(255, 255, 255);
 Dialog.create("BlobsSeg-Options");
 nChannel = Dialog.addChoice("Specify Channel:", newArray("C1", "C2", "C3", "C4"));
 ThreshCoeff = Dialog.addNumber("Tresh. Coeff. (big objects)", 0.75);
-MinSize = Dialog.addNumber("Min. Size (for big objects)", 15);
+MinSize = Dialog.addNumber("Min. Size (for big objects)", 100);
 
 Dialog.show();
 
