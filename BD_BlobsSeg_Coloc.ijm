@@ -1,5 +1,7 @@
 /// --- Initialize --- ///
 
+run("Options...", "iterations=1 count=1 black do=Nothing");
+
 if (isOpen("Log")) {selectWindow("Log"); run("Close");} 
 if (isOpen("Summary")) {selectWindow("Summary"); run("Close");} 
 if (isOpen("Results")) {selectWindow("Results"); run("Close");}
@@ -24,7 +26,6 @@ getPixelSize (unit, pixelWidth, pixelHeight);
 // C1 ------------------------------------------------------------------
 
 selectWindow(C1_Mask);
-//run("Invert");
 run("Set Measurements...", "area centroid redirect=None decimal=3");
 run("Analyze Particles...", "display add"); roiManager("Show None");
 
@@ -67,7 +68,6 @@ selectWindow(C1_Mask);
 // C2 ------------------------------------------------------------------
 
 selectWindow(C2_Mask);
-//run("Invert");
 run("Set Measurements...", "area centroid redirect=None decimal=3");
 run("Analyze Particles...", "display add"); roiManager("Show None");
 
